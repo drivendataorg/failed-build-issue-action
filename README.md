@@ -1,16 +1,19 @@
-# Create Failed Build Issue Action
+# Create Failed-Build Issue Action
 
-[![tests](https://github.com/jayqi/failed-build-issue-action/actions/workflows/tests.yml/badge.svg?branch=main)](https://github.com/jayqi/failed-build-issue-action/actions/workflows/tests.yml) [![codecov](https://codecov.io/github/jayqi/failed-build-issue-action/branch/main/graph/badge.svg?token=LKAEGPVU4N)](https://codecov.io/github/jayqi/failed-build-issue-action)
+[![tests](https://github.com/drivendataorg/failed-build-issue-action/actions/workflows/tests.yml/badge.svg?branch=main)](https://github.com/drivendataorg/failed-build-issue-action/actions/workflows/tests.yml) [![codecov](https://codecov.io/github/drivendataorg/failed-build-issue-action/branch/main/graph/badge.svg?token=LKAEGPVU4N)](https://codecov.io/github/drivendataorg/failed-build-issue-action)
+
+> [!IMPORTANT]
+> We've moved! The repository has transferred from jayqi/failed-build-issue-action to drivendataorg/failed-build-issue-action.
 
 This action makes it easy to notify maintainers of a GitHub Actions workflow failure via GitHub's issue tracker. By default, the action will find the latest open issue with the label `build failed` and add a comment. If no such issue is open, it will instead open a new issue.
 
 ## Basic usage
 
 ```yml
-- uses: jayqi/failed-build-issue-action@v1
+- uses: drivendataorg/failed-build-issue-action@v1
 ```
 
-For options, see [`action.yml`](./action.yml)
+For available options, see [`action.yml`](./action.yml)
 
 This action creates and comments on issues, so the `GITHUB_TOKEN` needs `issues: write` permission. The recommended way to grant it is with the [`permissions` keyword](https://docs.github.com/en/actions/writing-workflows/workflow-syntax-for-github-actions#permissions) on the job that runs the action, which keeps the token scoped to only what's needed:
 
@@ -49,7 +52,7 @@ jobs:
         run: |
           bash run_tests.sh
       - name: Notify failed build
-        uses: jayqi/failed-build-issue-action@v1
+        uses: drivendataorg/failed-build-issue-action@v1
         if: failure() && github.event.pull_request == null
 ```
 
@@ -123,7 +126,7 @@ jobs:
     permissions:
       issues: write
     steps:
-      - uses: jayqi/failed-build-issue-action@v1
+      - uses: drivendataorg/failed-build-issue-action@v1
 ```
 
 ### Explanation
