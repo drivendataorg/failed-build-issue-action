@@ -190,7 +190,7 @@ If you need to inject data that isn't available from the context object within t
 
 ## Comments vs. new issues
 
-By default, the action adds a comment to the most recently created open issue labeled build failed. If there is no such issue, it opens a new one with that label. This assumes only one such issue is open at a time (true as long as this action is the only thing creating them) and that a still-open issue means the new failure shares the same underlying cause as the earlier one.
+By default, the action adds a comment to the most recently created open issue labeled `build failed`. If there is no such issue, it opens a new one with that label. This assumes only one such issue is open at a time (true as long as this action is the only thing creating them) and that a still-open issue means the new failure shares the same underlying cause as the earlier one.
 
 If you would like to always create a new issue, set the parameter `always-create-new-issue` to `true`.
 
