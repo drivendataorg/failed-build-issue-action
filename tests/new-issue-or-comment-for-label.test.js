@@ -154,14 +154,14 @@ describe("Test newIssueOrCommentForLabel", () => {
         html_url: testIssueHtmlUrl,
       });
 
-    const { issueNumber, created } = await newIssueOrCommentForLabel(
-      "github_token_here",
-      testLabel,
-      defaultTitleTemplate,
-      defaultBodyTemplate,
-      true,
-      false,
-    )
+    const { issueNumber, created } = await newIssueOrCommentForLabel({
+      githubToken: "github_token_here",
+      labelName: testLabel,
+      titleTemplate: defaultTitleTemplate,
+      bodyTemplate: defaultBodyTemplate,
+      createLabel: true,
+      alwaysCreateNewIssue: false,
+    })
     expect(captured.listIssues).toEqual(expectedListQuery);
     expect(captured.createIssue).toEqual({
       title: expectedTitle,
@@ -209,14 +209,14 @@ describe("Test newIssueOrCommentForLabel", () => {
         }
       );
 
-    const { issueNumber, created } = await newIssueOrCommentForLabel(
-      "github_token_here",
-      testLabel,
-      defaultTitleTemplate,
-      defaultBodyTemplate,
-      true,
-      false,
-    )
+    const { issueNumber, created } = await newIssueOrCommentForLabel({
+      githubToken: "github_token_here",
+      labelName: testLabel,
+      titleTemplate: defaultTitleTemplate,
+      bodyTemplate: defaultBodyTemplate,
+      createLabel: true,
+      alwaysCreateNewIssue: false,
+    })
     expect(captured.listIssues).toEqual(expectedListQuery);
     // A comment carries only a body -- no title, no labels
     expect(captured.createComment).toEqual({ body: expectedBody });
@@ -280,14 +280,14 @@ describe("Test newIssueOrCommentForLabel", () => {
         }
       );
 
-    const { issueNumber, created } = await newIssueOrCommentForLabel(
-      "github_token_here",
-      testLabel,
-      defaultTitleTemplate,
-      defaultBodyTemplate,
-      true,
-      false,
-    )
+    const { issueNumber, created } = await newIssueOrCommentForLabel({
+      githubToken: "github_token_here",
+      labelName: testLabel,
+      titleTemplate: defaultTitleTemplate,
+      bodyTemplate: defaultBodyTemplate,
+      createLabel: true,
+      alwaysCreateNewIssue: false,
+    })
     expect(captured.listIssues).toEqual(expectedListQuery);
     expect(captured.createComment).toEqual({ body: expectedBody });
     expect(issueNumber).toBe(existingIssueNumber);
@@ -336,14 +336,14 @@ describe("Test newIssueOrCommentForLabel", () => {
         html_url: testIssueHtmlUrl,
       });
 
-    const { issueNumber, created } = await newIssueOrCommentForLabel(
-      "github_token_here",
-      testLabel,
-      defaultTitleTemplate,
-      defaultBodyTemplate,
-      true,
-      false,
-    )
+    const { issueNumber, created } = await newIssueOrCommentForLabel({
+      githubToken: "github_token_here",
+      labelName: testLabel,
+      titleTemplate: defaultTitleTemplate,
+      bodyTemplate: defaultBodyTemplate,
+      createLabel: true,
+      alwaysCreateNewIssue: false,
+    })
     expect(captured.listIssues).toEqual(expectedListQuery);
     expect(captured.createIssue).toEqual({
       title: expectedTitle,
@@ -382,14 +382,14 @@ describe("Test newIssueOrCommentForLabel", () => {
         html_url: testIssueHtmlUrl,
       });
 
-    const { issueNumber, created } = await newIssueOrCommentForLabel(
-      "github_token_here",
-      testLabel,
-      defaultTitleTemplate,
-      defaultBodyTemplate,
-      false,
-      true,
-    )
+    const { issueNumber, created } = await newIssueOrCommentForLabel({
+      githubToken: "github_token_here",
+      labelName: testLabel,
+      titleTemplate: defaultTitleTemplate,
+      bodyTemplate: defaultBodyTemplate,
+      createLabel: false,
+      alwaysCreateNewIssue: true,
+    })
     expect(captured.listIssues).toBeUndefined();
     expect(captured.createIssue).toEqual({
       title: expectedTitle,
@@ -412,14 +412,14 @@ describe("Test newIssueOrCommentForLabel", () => {
       });
 
     await expect(
-      newIssueOrCommentForLabel(
-        "github_token_here",
-        testLabel,
-        defaultTitleTemplate,
-        defaultBodyTemplate,
-        false,
-        false,
-      )
+      newIssueOrCommentForLabel({
+        githubToken: "github_token_here",
+        labelName: testLabel,
+        titleTemplate: defaultTitleTemplate,
+        bodyTemplate: defaultBodyTemplate,
+        createLabel: false,
+        alwaysCreateNewIssue: false,
+      })
     )
       .rejects
       .toThrow(`Label "${testLabel}" not found and createLabel = false.`);
@@ -452,16 +452,16 @@ describe("Test newIssueOrCommentForLabel", () => {
         html_url: testIssueHtmlUrl,
       });
 
-    const { issueNumber, created } = await newIssueOrCommentForLabel(
-      "github_token_here",
-      testLabel,
-      defaultTitleTemplate,
-      defaultBodyTemplate,
-      true,
-      false,
-      "B60205",
-      "Build failed in CI",
-    )
+    const { issueNumber, created } = await newIssueOrCommentForLabel({
+      githubToken: "github_token_here",
+      labelName: testLabel,
+      titleTemplate: defaultTitleTemplate,
+      bodyTemplate: defaultBodyTemplate,
+      createLabel: true,
+      labelColor: "B60205",
+      labelDescription: "Build failed in CI",
+      alwaysCreateNewIssue: false,
+    })
     expect(captured.createLabel).toEqual({
       name: testLabel,
       color: "B60205",
@@ -505,14 +505,54 @@ describe("Test newIssueOrCommentForLabel", () => {
         html_url: `https://github.com/${testOwner}/${testRepo}/issues/100`,
       });
 
-    await newIssueOrCommentForLabel(
-      "github_token_here",
-      testLabel,
-      defaultTitleTemplate,
-      defaultBodyTemplate,
-      true,
-      false,
-    )
+    await newIssueOrCommentForLabel({
+      githubToken: "github_token_here",
+      labelName: testLabel,
+      titleTemplate: defaultTitleTemplate,
+      bodyTemplate: defaultBodyTemplate,
+      createLabel: true,
+      alwaysCreateNewIssue: false,
+    })
+    expect(captured.createLabel).toEqual({ name: testLabel });
+  });
+
+  // Distinct from the case above: JSON.stringify drops an undefined key on its own, but
+  // sends "" through, and "" is what normalizeLabelColor returns for a value it rejects.
+  it("should omit an empty color and description from createLabel", async () => {
+    // Mock check if label exists
+    nock("https://api.github.com")
+      .get(`/repos/${testOwner}/${testRepo}/labels/${encodeURI(testLabel)}`)
+      .reply(404, {
+        message: "Not Found",
+      });
+    nock("https://api.github.com")
+      .post(`/repos/${testOwner}/${testRepo}/labels`, capture('createLabel'))
+      .reply(201, {
+        name: testLabel,
+      });
+    // Mock search issues with label
+    nock("https://api.github.com")
+      .get(`/repos/${testOwner}/${testRepo}/issues`)
+      .query(capture('listIssues'))
+      .reply(200, []);
+    // Mock create new issue
+    nock("https://api.github.com")
+      .post(`/repos/${testOwner}/${testRepo}/issues`, capture('createIssue'))
+      .reply(200, {
+        number: 100,
+        html_url: `https://github.com/${testOwner}/${testRepo}/issues/100`,
+      });
+
+    await newIssueOrCommentForLabel({
+      githubToken: "github_token_here",
+      labelName: testLabel,
+      titleTemplate: defaultTitleTemplate,
+      bodyTemplate: defaultBodyTemplate,
+      createLabel: true,
+      labelColor: "",
+      labelDescription: "",
+      alwaysCreateNewIssue: false,
+    })
     expect(captured.createLabel).toEqual({ name: testLabel });
   });
 
@@ -554,14 +594,14 @@ describe("Test newIssueOrCommentForLabel", () => {
         html_url: `https://github.com/${testOwner}/${testRepo}/issues/${newIssueNumber}`,
       });
 
-    await newIssueOrCommentForLabel(
-      "github_token_here",
-      testLabel,
-      defaultTitleTemplate,
-      defaultBodyTemplate,
-      true,
-      false,
-    )
+    await newIssueOrCommentForLabel({
+      githubToken: "github_token_here",
+      labelName: testLabel,
+      titleTemplate: defaultTitleTemplate,
+      bodyTemplate: defaultBodyTemplate,
+      createLabel: true,
+      alwaysCreateNewIssue: false,
+    })
     expect(captured.createIssue.body).toContain(
       `Branch: [${forkOwner}:${forkBranch}](${testServerUrl}/${forkOwner}/${testRepo}/tree/${forkBranch})`
     );
@@ -595,14 +635,14 @@ describe("Test newIssueOrCommentForLabel", () => {
         html_url: `https://github.com/${testOwner}/${testRepo}/issues/${newIssueNumber}`,
       });
 
-    await newIssueOrCommentForLabel(
-      "github_token_here",
-      testLabel,
-      defaultTitleTemplate,
-      defaultBodyTemplate,
-      true,
-      false,
-    )
+    await newIssueOrCommentForLabel({
+      githubToken: "github_token_here",
+      labelName: testLabel,
+      titleTemplate: defaultTitleTemplate,
+      bodyTemplate: defaultBodyTemplate,
+      createLabel: true,
+      alwaysCreateNewIssue: false,
+    })
     const body = captured.createIssue.body;
     expect(body).toContain(`(${ghesUrl}/${testOwner}/${testRepo}/actions/runs/${testRunId})`);
     expect(body).toContain(`(${ghesUrl}/${testOwner}/${testRepo}/tree/${testRefName})`);
@@ -621,14 +661,14 @@ describe("Test newIssueOrCommentForLabel", () => {
       });
 
     await expect(
-      newIssueOrCommentForLabel(
-        "github_token_here",
-        testLabel,
-        defaultTitleTemplate,
-        defaultBodyTemplate,
-        false,
-        false,
-      )
+      newIssueOrCommentForLabel({
+        githubToken: "github_token_here",
+        labelName: testLabel,
+        titleTemplate: defaultTitleTemplate,
+        bodyTemplate: defaultBodyTemplate,
+        createLabel: false,
+        alwaysCreateNewIssue: false,
+      })
     )
       .rejects
       .toThrow(new Error("Bad Request"));
@@ -660,14 +700,14 @@ describe("Test newIssueOrCommentForLabel", () => {
         html_url: `https://github.com/${testOwner}/${testRepo}/issues/${newIssueNumber}`,
       });
 
-    await newIssueOrCommentForLabel(
-      "github_token_here",
-      testLabel,
-      defaultTitleTemplate,
-      defaultBodyTemplate,
-      true,
-      false,
-    )
+    await newIssueOrCommentForLabel({
+      githubToken: "github_token_here",
+      labelName: testLabel,
+      titleTemplate: defaultTitleTemplate,
+      bodyTemplate: defaultBodyTemplate,
+      createLabel: true,
+      alwaysCreateNewIssue: false,
+    })
     expect(captured.createIssue.title).toBe(`Failed build: ${specialWorkflow}`);
   });
 
@@ -698,14 +738,14 @@ describe("Test newIssueOrCommentForLabel", () => {
         html_url: `https://github.com/${testOwner}/${testRepo}/issues/${newIssueNumber}`,
       });
 
-    await newIssueOrCommentForLabel(
-      "github_token_here",
-      testLabel,
-      defaultTitleTemplate,
-      bodyTemplateWithCodeSpan,
-      true,
-      false,
-    )
+    await newIssueOrCommentForLabel({
+      githubToken: "github_token_here",
+      labelName: testLabel,
+      titleTemplate: defaultTitleTemplate,
+      bodyTemplate: bodyTemplateWithCodeSpan,
+      createLabel: true,
+      alwaysCreateNewIssue: false,
+    })
     expect(captured.createIssue.body).toBe(`Workflow \`${specialWorkflow}\` failed on \`${testRefName}\`.`);
   });
 });

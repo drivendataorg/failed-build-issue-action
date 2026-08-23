@@ -40,10 +40,16 @@ const templateView = (context, ref) => ({
   refname: deprecatedRefname(ref.refName),
 });
 
-let newIssueOrCommentForLabel = async function (
-  githubToken, labelName, titleTemplate, bodyTemplate, createLabel, alwaysCreateNewIssue,
-  labelColor, labelDescription
-) {
+let newIssueOrCommentForLabel = async function ({
+  githubToken,
+  labelName,
+  titleTemplate,
+  bodyTemplate,
+  createLabel,
+  labelColor,
+  labelDescription,
+  alwaysCreateNewIssue,
+}) {
   // octokit client
   // https://octokit.github.io/rest.js/
   const octokit = github.getOctokit(githubToken);
@@ -57,6 +63,8 @@ let newIssueOrCommentForLabel = async function (
   core.debug("titleTemplate: " + titleTemplate)
   core.debug("bodyTemplate: " + bodyTemplate)
   core.debug("createLabel: " + String(createLabel))
+  core.debug("labelColor: " + labelColor)
+  core.debug("labelDescription: " + labelDescription)
   core.debug("alwaysCreateNewIssue: " + String(alwaysCreateNewIssue))
   core.debug("view: " + JSON.stringify(view))
 
@@ -74,17 +82,12 @@ let newIssueOrCommentForLabel = async function (
       core.info("Label '" + labelName + "' not found.")
       if (createLabel) {
         core.info("Creating label '" + labelName + "'...")
-        const createLabelBody = { name: labelName };
-        if (labelColor) {
-          createLabelBody.color = labelColor;
-        }
-        if (labelDescription) {
-          createLabelBody.description = labelDescription;
-        }
         const create_label_response = await octokit.rest.issues.createLabel({
           owner,
           repo,
-          ...createLabelBody,
+          name: labelName,
+          ...(labelColor && { color: labelColor }),
+          ...(labelDescription && { description: labelDescription }),
         });
         core.debug("create_label_response:\n" + JSON.stringify(create_label_response))
       } else {

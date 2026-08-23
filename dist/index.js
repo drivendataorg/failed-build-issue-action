@@ -10993,28 +10993,33 @@ function wrappy (fn, cb) {
 const core = __nccwpck_require__(7484);
 const newIssueOrCommentForLabel = __nccwpck_require__(4018);
 
+// Normalizes to a bare 6-digit hex code
+// Invalid values are dropped, which falls back to GitHub's random color assignment
+const normalizeLabelColor = (input) => {
+  const color = (input || "").trim().replace(/^#/, "");
+  if (!color) return "";
+  if (/^[0-9a-fA-F]{6}$/.test(color)) return color;
+  core.warning(
+    `Ignoring invalid 'label-color' value "${input}". Expected a 6-digit hex code, ` +
+    `e.g. "CB2431". Letting GitHub assign the label color.`
+  );
+  return "";
+};
+
 // most @actions toolkit packages have async methods
 async function run() {
   try {
-    const githubToken = core.getInput('github-token');
-    const labelName = core.getInput('label-name');
-    const titleTemplate = core.getInput('title-template');
-    const bodyTemplate = core.getInput('body-template');
-    const createLabel = core.getBooleanInput('create-label');
-    const alwaysCreateNewIssue = core.getBooleanInput('always-create-new-issue');
-    const labelColor = core.getInput('label-color');
-    const labelDescription = core.getInput('label-description');
-
-    const { issueNumber, created } = await newIssueOrCommentForLabel(
-      githubToken,
-      labelName,
-      titleTemplate,
-      bodyTemplate,
-      createLabel,
-      alwaysCreateNewIssue,
-      labelColor,
-      labelDescription,
-    )
+    // Keyed, and in the order action.yml declares them
+    const { issueNumber, created } = await newIssueOrCommentForLabel({
+      githubToken: core.getInput('github-token'),
+      labelName: core.getInput('label-name'),
+      titleTemplate: core.getInput('title-template'),
+      bodyTemplate: core.getInput('body-template'),
+      createLabel: core.getBooleanInput('create-label'),
+      labelColor: normalizeLabelColor(core.getInput('label-color')),
+      labelDescription: core.getInput('label-description'),
+      alwaysCreateNewIssue: core.getBooleanInput('always-create-new-issue'),
+    })
     const htmlUrl = created.html_url
     core.info("Created url: " + htmlUrl);
 
@@ -11027,6 +11032,8 @@ async function run() {
 }
 
 module.exports = { run };
+// Exported for unit tests; not part of the action's interface.
+module.exports.normalizeLabelColor = normalizeLabelColor;
 
 
 /***/ }),
@@ -11076,10 +11083,16 @@ const templateView = (context, ref) => ({
   refname: deprecatedRefname(ref.refName),
 });
 
-let newIssueOrCommentForLabel = async function (
-  githubToken, labelName, titleTemplate, bodyTemplate, createLabel, alwaysCreateNewIssue,
-  labelColor, labelDescription
-) {
+let newIssueOrCommentForLabel = async function ({
+  githubToken,
+  labelName,
+  titleTemplate,
+  bodyTemplate,
+  createLabel,
+  labelColor,
+  labelDescription,
+  alwaysCreateNewIssue,
+}) {
   // octokit client
   // https://octokit.github.io/rest.js/
   const octokit = github.getOctokit(githubToken);
@@ -11093,6 +11106,8 @@ let newIssueOrCommentForLabel = async function (
   core.debug("titleTemplate: " + titleTemplate)
   core.debug("bodyTemplate: " + bodyTemplate)
   core.debug("createLabel: " + String(createLabel))
+  core.debug("labelColor: " + labelColor)
+  core.debug("labelDescription: " + labelDescription)
   core.debug("alwaysCreateNewIssue: " + String(alwaysCreateNewIssue))
   core.debug("view: " + JSON.stringify(view))
 
@@ -11110,17 +11125,12 @@ let newIssueOrCommentForLabel = async function (
       core.info("Label '" + labelName + "' not found.")
       if (createLabel) {
         core.info("Creating label '" + labelName + "'...")
-        const createLabelBody = { name: labelName };
-        if (labelColor) {
-          createLabelBody.color = labelColor;
-        }
-        if (labelDescription) {
-          createLabelBody.description = labelDescription;
-        }
         const create_label_response = await octokit.rest.issues.createLabel({
           owner,
           repo,
-          ...createLabelBody,
+          name: labelName,
+          ...(labelColor && { color: labelColor }),
+          ...(labelDescription && { description: labelDescription }),
         });
         core.debug("create_label_response:\n" + JSON.stringify(create_label_response))
       } else {
