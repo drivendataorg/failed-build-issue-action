@@ -15,6 +15,20 @@ const normalizeLabelColor = (input) => {
   return "";
 };
 
+// The API rejects a description over this length
+const LABEL_DESCRIPTION_MAX_LENGTH = 100;
+
+// Over-long values are dropped, which creates the label without a description
+const normalizeLabelDescription = (input) => {
+  const description = (input || "").trim();
+  if (description.length <= LABEL_DESCRIPTION_MAX_LENGTH) return description;
+  core.warning(
+    `Ignoring 'label-description' value of ${description.length} characters, over the ` +
+    `${LABEL_DESCRIPTION_MAX_LENGTH} GitHub allows. Creating the label without a description.`
+  );
+  return "";
+};
+
 // most @actions toolkit packages have async methods
 async function run() {
   try {
@@ -26,7 +40,7 @@ async function run() {
       bodyTemplate: core.getInput('body-template'),
       createLabel: core.getBooleanInput('create-label'),
       labelColor: normalizeLabelColor(core.getInput('label-color')),
-      labelDescription: core.getInput('label-description'),
+      labelDescription: normalizeLabelDescription(core.getInput('label-description')),
       alwaysCreateNewIssue: core.getBooleanInput('always-create-new-issue'),
     })
     const htmlUrl = created.html_url
@@ -44,3 +58,4 @@ async function run() {
 module.exports = { run };
 // Exported for unit tests; not part of the action's interface.
 module.exports.normalizeLabelColor = normalizeLabelColor;
+module.exports.normalizeLabelDescription = normalizeLabelDescription;

@@ -1,5 +1,6 @@
 const core = require('@actions/core');
 const { normalizeLabelColor } = require('../src/main');
+const { actionYml } = require('./action-metadata');
 
 describe("Test normalizeLabelColor", () => {
   beforeEach(() => {
@@ -10,7 +11,14 @@ describe("Test normalizeLabelColor", () => {
     jest.restoreAllMocks();
   });
 
-  // The action.yml default is '#CB2431', so this is the path every default run takes.
+  // Read from action.yml rather than hardcoded: a default that stopped being a usable color
+  // would otherwise leave every default run with a GitHub-assigned one and no warning.
+  it("normalizes the action.yml default to a bare hex code", () => {
+    expect(normalizeLabelColor(actionYml.inputs['label-color'].default))
+      .toMatch(/^[0-9a-fA-F]{6}$/);
+    expect(core.warning).not.toHaveBeenCalled();
+  });
+
   it("strips a leading '#'", () => {
     expect(normalizeLabelColor("#CB2431")).toBe("CB2431");
     expect(core.warning).not.toHaveBeenCalled();
@@ -28,21 +36,23 @@ describe("Test normalizeLabelColor", () => {
     expect(normalizeLabelColor("  #CB2431  ")).toBe("CB2431");
   });
 
-  // getInput returns '' for an input the workflow left unset, which means
-  // "let GitHub assign a color" rather than a mistake worth warning about.
-  it("returns empty without warning for an unset input", () => {
+  // getInput returns '' only when a workflow sets the input empty explicitly; an unset input
+  // gets the action.yml default. Empty means "let GitHub assign a color", not a mistake.
+  it("returns empty without warning for an empty input", () => {
     expect(normalizeLabelColor("")).toBe("");
     expect(core.warning).not.toHaveBeenCalled();
   });
 
+  // Values chosen not to appear in the warning's own example text, and matched with the
+  // quotes around them, so the assertion cannot pass on the static part of the message.
   it.each([
-    ["CB243", "five digits"],
-    ["CB24311", "seven digits"],
-    ["CB2", "three-digit shorthand, which the API rejects"],
+    ["12345", "five digits"],
+    ["1234567", "seven digits"],
+    ["F00", "three-digit shorthand, which the API rejects"],
     ["GGGGGG", "non-hex characters"],
     ["red", "a color name"],
   ])("warns and drops '%s' (%s)", (input) => {
     expect(normalizeLabelColor(input)).toBe("");
-    expect(core.warning).toHaveBeenCalledWith(expect.stringContaining(input));
+    expect(core.warning).toHaveBeenCalledWith(expect.stringContaining(`"${input}"`));
   });
 });
