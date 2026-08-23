@@ -29,11 +29,11 @@ inputs:
     required: false
     default: true
   label-color:
-    description: "Color of the label to create if `create-label` is true and 'label-name' doesn't already exist."
+    description: "Color of the label to create if 'create-label' is true and 'label-name' doesn't already exist."
     required: false
     default: "#CB2431"
   label-description:
-    description: "Description for the label to create if `create-label` is true and 'label-name' doesn't already exist."
+    description: "Description for the label to create if 'create-label' is true and 'label-name' doesn't already exist."
     required: false
     default: "GitHub Actions workflow failure, used by jayqi/failed-build-issue-action"
   always-create-new-issue:
