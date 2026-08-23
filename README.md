@@ -2,7 +2,7 @@
 
 [![tests](https://github.com/jayqi/failed-build-issue-action/actions/workflows/tests.yml/badge.svg?branch=main)](https://github.com/jayqi/failed-build-issue-action/actions/workflows/tests.yml) [![codecov](https://codecov.io/github/jayqi/failed-build-issue-action/branch/main/graph/badge.svg?token=LKAEGPVU4N)](https://codecov.io/github/jayqi/failed-build-issue-action)
 
-This action makes it easy to notify maintainers of a failed GitHub Actions workflow via GitHub's issue tracker. By default, the action will find the latest open issue with the label `"build failed"` and add a comment. If no such issue is open, it will instead open a new issue.
+This action makes it easy to notify maintainers of a GitHub Actions workflow failure via GitHub's issue tracker. By default, the action will find the latest open issue with the label `build failed` and add a comment. If no such issue is open, it will instead open a new issue.
 
 ## Basic usage
 
@@ -200,26 +200,4 @@ If you are sticking with the default behavior of appending a comment, but you ha
 
 [GitHub Projects](https://docs.github.com/en/issues/planning-and-tracking-with-projects/learning-about-projects/about-projects) is a work planning tool in GitHub that provides additional ways to view and interact with issues and pull requests across repos. Since this action just creates or interacts with issues, you can use GitHub Projects to manage those issues like any other issue.
 
-One common requirement may be to automatically add issues created by this action to a GitHub Project. You can use the built-in [auto-add workflow](https://docs.github.com/en/issues/planning-and-tracking-with-projects/learning-about-projects/quickstart-for-projects#configure-built-in-automation) with the `"build failed"` label (or whatever label you've configured) to accomplish this.
-
-## Using the development version
-
-To use the development version on the `main` branch (or any other version that is not a tagged release), you will need to check out the repository and build the Node.js package. Here is an example set of steps to include in a job to use the latest version from `main`:
-
-```
-steps:
-  - name: Checkout
-    uses: actions/checkout@v4
-    with:
-      repository: jayqi/failed-build-issue-action
-      ref: main
-
-  - name: Install dependencies
-    run: npm ci
-
-  - name: Build package
-    run: npm run build
-
-  - name: Run failed-build-issue-action
-    uses: ./
-```
+One common requirement may be to automatically add issues created by this action to a GitHub Project. You can use the built-in [auto-add workflow](https://docs.github.com/en/issues/planning-and-tracking-with-projects/learning-about-projects/quickstart-for-projects#configure-built-in-automation) with the `build failed` label (or whatever label you've configured) to accomplish this.
