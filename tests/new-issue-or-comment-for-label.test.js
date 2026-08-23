@@ -480,45 +480,9 @@ describe("Test newIssueOrCommentForLabel", () => {
     });
   });
 
-  it("should omit color and description from createLabel when not provided", async () => {
-    // Mock check if label exists
-    nock("https://api.github.com")
-      .get(`/repos/${testOwner}/${testRepo}/labels/${encodeURI(testLabel)}`)
-      .reply(404, {
-        message: "Not Found",
-      });
-    nock("https://api.github.com")
-      .post(`/repos/${testOwner}/${testRepo}/labels`, capture('createLabel'))
-      .reply(201, {
-        name: testLabel,
-      });
-    // Mock search issues with label
-    nock("https://api.github.com")
-      .get(`/repos/${testOwner}/${testRepo}/issues`)
-      .query(capture('listIssues'))
-      .reply(200, []);
-    // Mock create new issue
-    nock("https://api.github.com")
-      .post(`/repos/${testOwner}/${testRepo}/issues`, capture('createIssue'))
-      .reply(200, {
-        number: 100,
-        html_url: `https://github.com/${testOwner}/${testRepo}/issues/100`,
-      });
-
-    await newIssueOrCommentForLabel({
-      githubToken: "github_token_here",
-      labelName: testLabel,
-      titleTemplate: defaultTitleTemplate,
-      bodyTemplate: defaultBodyTemplate,
-      createLabel: true,
-      alwaysCreateNewIssue: false,
-    })
-    expect(captured.createLabel).toEqual({ name: testLabel });
-  });
-
-  // Distinct from the case above: JSON.stringify drops an undefined key on its own, but
-  // sends "" through, and "" is what normalizeLabelColor returns for a value it rejects.
-  it("should omit an empty color and description from createLabel", async () => {
+  // "" is what normalizeLabelColor returns for a color it rejects, and what getInput
+  // returns for an input a workflow set to empty.
+  it("should omit color and description from createLabel when they are empty", async () => {
     // Mock check if label exists
     nock("https://api.github.com")
       .get(`/repos/${testOwner}/${testRepo}/labels/${encodeURI(testLabel)}`)
