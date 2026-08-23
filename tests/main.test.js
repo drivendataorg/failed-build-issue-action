@@ -13,8 +13,9 @@ describe("Test run", () => {
     'label-name': "build failed",
     'title-template': "Failed build: {{workflow}}",
     'body-template': "Build failed on {{refName}}.",
+    // Both deliberately un-normalized, so the assertion below covers run() normalizing them
     'label-color': "#CB2431",
-    'label-description': "Build failed in CI",
+    'label-description': "  Build failed in CI  ",
   };
   const booleanInputs = {
     'create-label': true,
