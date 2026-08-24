@@ -3,14 +3,14 @@
 [![tests](https://github.com/drivendataorg/failed-build-issue-action/actions/workflows/tests.yml/badge.svg?branch=main)](https://github.com/drivendataorg/failed-build-issue-action/actions/workflows/tests.yml) [![codecov](https://codecov.io/github/drivendataorg/failed-build-issue-action/branch/main/graph/badge.svg?token=LKAEGPVU4N)](https://codecov.io/github/drivendataorg/failed-build-issue-action)
 
 > [!IMPORTANT]
-> We've moved! This repository has transferred from jayqi/failed-build-issue-action to drivendataorg/failed-build-issue-action.
+> We've moved! This repository has transferred from jayqi/failed-build-issue-action to drivendataorg/failed-build-issue-action. Old references will continue to redirect but we recommend updating.
 
 This action makes it easy to notify maintainers of a GitHub Actions workflow failure via GitHub's issue tracker. By default, the action will find the latest open issue with the label `build failed` and add a comment. If no such issue is open, it will instead open a new issue.
 
 ## Basic usage
 
 ```yml
-- uses: drivendataorg/failed-build-issue-action@v2.0.0
+- uses: drivendataorg/failed-build-issue-action@v1.3.0
 ```
 
 For available options, see [`action.yml`](./action.yml)
@@ -52,7 +52,7 @@ jobs:
         run: |
           bash run_tests.sh
       - name: Notify failed build
-        uses: drivendataorg/failed-build-issue-action@v2.0.0
+        uses: drivendataorg/failed-build-issue-action@v1.3.0
         if: failure() && github.event.pull_request == null
 ```
 
@@ -126,7 +126,7 @@ jobs:
     permissions:
       issues: write
     steps:
-      - uses: drivendataorg/failed-build-issue-action@v2.0.0
+      - uses: drivendataorg/failed-build-issue-action@v1.3.0
 ```
 
 ### Explanation

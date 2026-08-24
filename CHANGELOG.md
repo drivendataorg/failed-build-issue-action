@@ -1,8 +1,8 @@
 # Changelog
 
-## v2.0.0 (2026-08-23)
+## v1.3.0 (2026-08-23)
 
-**We've moved! This repository has transferred from jayqi/failed-build-issue-action to drivendataorg/failed-build-issue-action.**
+**We've moved! This repository has transferred from jayqi/failed-build-issue-action to drivendataorg/failed-build-issue-action. Old references will continue to redirect but we recommend updating.**
 
 - Changed action to use [Node 24 runtime](https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/).
 - Changed the `github-token` input to default to `${{ github.token }}`, the token GitHub Actions automatically provides to every job. Basic usage now needs no `with:` block at all. Passing `github-token` explicitly still works and is unchanged, and is still how you use a different account, such as a GitHub App or a personal access token.
