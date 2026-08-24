@@ -29,6 +29,10 @@ jobs:
           # Dereference to the commit so the major tag never becomes a
           # tag-of-a-tag when the release tag is annotated.
           git tag -f "$MAJOR" "$TAG^{commit}"
-          git push origin -f "refs/tags/$MAJOR"
+          # Checkout runs with persist-credentials: false, so authenticate push inline
+          git push -f \
+            "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" \
+            "refs/tags/$MAJOR"
         env:
           GITHUB_EVENT_RELEASE_TAG_NAME: ${{ github.event.release.tag_name }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
