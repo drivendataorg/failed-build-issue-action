@@ -1,4 +1,4 @@
-name: release
+name: move-major-tag
 
 on:
   release:
