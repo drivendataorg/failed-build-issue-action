@@ -1,6 +1,6 @@
 {
   "name": "failed-build-issue-action",
-  "description": "Creates or updates latest open issue with a 'build failed' label.",
+  "description": "Creates or comments on latest open issue that has a 'build failed' label.",
   "scripts": {
     "build": "ncc build ./src/index.js",
     "lint": "eslint .",

@@ -10,7 +10,7 @@ This action makes it easy to notify maintainers of a GitHub Actions workflow fai
 ## Basic usage
 
 ```yml
-- uses: drivendataorg/failed-build-issue-action@v1
+- uses: drivendataorg/failed-build-issue-action@v2.0.0
 ```
 
 For available options, see [`action.yml`](./action.yml)
@@ -47,12 +47,12 @@ jobs:
       contents: read
       issues: write
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7.0.1
       - name: Run tests
         run: |
           bash run_tests.sh
       - name: Notify failed build
-        uses: drivendataorg/failed-build-issue-action@v1
+        uses: drivendataorg/failed-build-issue-action@v2.0.0
         if: failure() && github.event.pull_request == null
 ```
 
@@ -100,7 +100,7 @@ jobs:
     name: Code quality
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7.0.1
       - name: Run linting
         run: |
           bash run_linting.sh
@@ -126,7 +126,7 @@ jobs:
     permissions:
       issues: write
     steps:
-      - uses: drivendataorg/failed-build-issue-action@v1
+      - uses: drivendataorg/failed-build-issue-action@v2.0.0
 ```
 
 ### Explanation
