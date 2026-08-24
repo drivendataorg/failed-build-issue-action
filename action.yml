@@ -23,7 +23,7 @@ inputs:
       Branch: [{{refName}}]({{refUrl}})
       Commit: [{{sha}}]({{serverUrl}}/{{repo.owner}}/{{repo.repo}}/commit/{{sha}})
 
-      <sup><i>Created by [jayqi/failed-build-issue-action](https://github.com/jayqi/failed-build-issue-action)</i></sup>
+      <sup><i>Created by [drivendataorg/failed-build-issue-action](https://github.com/drivendataorg/failed-build-issue-action)</i></sup>
   create-label:
     description: "Whether to create a new label for 'label-name' if it doesn't already exist."
     required: false
@@ -35,7 +35,7 @@ inputs:
   label-description:
     description: "Description for the label to create if 'create-label' is true and 'label-name' doesn't already exist."
     required: false
-    default: "GitHub Actions workflow failure, used by jayqi/failed-build-issue-action"
+    default: "GitHub Actions workflow failure, used by drivendataorg/failed-build-issue-action"
   always-create-new-issue:
     description: "If true, will always create a new issue, even if one matching 'label-name' is already open."
     required: false

@@ -7,7 +7,7 @@ const { run } = require('../src/main');
 const { declaredInputs } = require('./action-metadata');
 
 describe("Test run", () => {
-  const testHtmlUrl = "https://github.com/jayqi/not-a-real-repo/issues/100";
+  const testHtmlUrl = "https://github.com/drivendataorg/not-a-real-repo/issues/100";
   const inputs = {
     'github-token': "github_token_here",
     'label-name': "build failed",

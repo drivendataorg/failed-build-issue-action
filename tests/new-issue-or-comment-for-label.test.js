@@ -26,7 +26,7 @@ Event: ${testEventName}
 Branch: [${testRefName}](${testServerUrl}/${testOwner}/${testRepo}/tree/${testRefName})
 Commit: [${testSha}](${testServerUrl}/${testOwner}/${testRepo}/commit/${testSha})
 
-<sup><i>Created by [jayqi/failed-build-issue-action](https://github.com/jayqi/failed-build-issue-action)</i></sup>
+<sup><i>Created by [drivendataorg/failed-build-issue-action](https://github.com/drivendataorg/failed-build-issue-action)</i></sup>
 `;
 
 // Octokit sends every list parameter as a query string, so all values are strings
