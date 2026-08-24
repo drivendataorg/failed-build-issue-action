@@ -1,6 +1,6 @@
 # Changelog
 
-## v2.0.0 (2026-08-11)
+## v2.0.0 (2026-08-23)
 
 **We've moved! The repository has transferred from jayqi/failed-build-issue-action to drivendataorg/failed-build-issue-action.**
 
