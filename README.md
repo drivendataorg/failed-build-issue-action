@@ -9,12 +9,12 @@ This action makes it easy to notify maintainers of a GitHub Actions workflow fai
 
 ## Basic usage
 
+> [!TIP]
+> GitHub [recommends](https://docs.github.com/en/actions/reference/security/secure-use#using-third-party-actions) always pinning third-party actions to a full-length commit SHA as a security best practice. 
+
 ```yml
 - uses: drivendataorg/failed-build-issue-action@940568ce50eeef3f31a920614cefcc6102d2f930 # v1.3.0
 ```
-
-> [!TIP]
-> GitHub [recommends](https://docs.github.com/en/actions/reference/security/secure-use#using-third-party-actions) always pinning third-party actions to a full-length commit SHA as a security best practice. 
 
 For available options, see [`action.yml`](./action.yml)
 
