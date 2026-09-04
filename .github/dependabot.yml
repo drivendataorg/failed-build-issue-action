@@ -4,6 +4,11 @@ updates:
     directory: /
     schedule:
       interval: monthly
+    # Minor and patch updates arrive as one PR. Majors still individual PRs.
+    groups:
+      actions-minor-patch:
+        patterns: ["*"]
+        update-types: ["minor", "patch"]
     cooldown:
       default-days: 7
 
