@@ -1,6 +1,6 @@
 # Failed Build Issue Action
 
-[![tests](https://github.com/drivendataorg/failed-build-issue-action/actions/workflows/tests.yml/badge.svg?branch=main)](https://github.com/drivendataorg/failed-build-issue-action/actions/workflows/tests.yml) [![codecov](https://codecov.io/github/drivendataorg/failed-build-issue-action/branch/main/graph/badge.svg?token=LKAEGPVU4N)](https://codecov.io/github/drivendataorg/failed-build-issue-action)
+[![tests](https://github.com/drivendataorg/failed-build-issue-action/actions/workflows/tests.yml/badge.svg?branch=main)](https://github.com/drivendataorg/failed-build-issue-action/actions/workflows/tests.yml)
 
 > [!IMPORTANT]
 > We've moved! This repository has transferred from **jayqi/failed-build-issue-action** to **drivendataorg/failed-build-issue-action**. Old references will continue to redirect but we recommend updating.
