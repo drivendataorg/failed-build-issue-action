@@ -23,12 +23,5 @@ updates:
     groups:
       dev-dependencies:
         dependency-type: development
-    # Major versions of these are upgraded by hand, not by Dependabot. Minor and patch
-    # updates are unaffected, so security fixes on the current majors still come through.
-    ignore:
-      - dependency-name: "@actions/core"
-        update-types: ["version-update:semver-major"]
-      - dependency-name: "@actions/github"
-        update-types: ["version-update:semver-major"]
     cooldown:
       default-days: 7
