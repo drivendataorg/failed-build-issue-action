@@ -2,6 +2,7 @@ import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
   test: {
+    include: ['tests/**/*.test.js'],
     // @actions/github reads these when first imported, before any test hook runs,
     // so a developer's shell environment could otherwise redirect its requests.
     env: {

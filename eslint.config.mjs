@@ -9,7 +9,7 @@ export default [
     languageOptions: {
       ecmaVersion: 2024,
       sourceType: "module",
-      globals: globals.node,
+      globals: globals.nodeBuiltin,
     },
   },
 ];

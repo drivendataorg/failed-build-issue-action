@@ -635,7 +635,7 @@ describe("Test newIssueOrCommentForLabel", () => {
       })
     )
       .rejects
-      .toThrow("Bad Request");
+      .toMatchObject({ status: 400, message: "Bad Request" });
   });
 
   it("should not HTML-escape special characters in the issue title", async () => {
