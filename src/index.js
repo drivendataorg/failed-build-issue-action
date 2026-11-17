@@ -1,4 +1,4 @@
 /* istanbul ignore file */
-const { run } = require('./main');
+import { run } from './main.js';
 
 run();

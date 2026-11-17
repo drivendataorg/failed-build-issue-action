@@ -1,16 +1,14 @@
-const core = require('@actions/core');
-const { normalizeLabelColor } = require('../src/main');
-const { actionYml } = require('./action-metadata');
+import { describe, expect, it, vi } from 'vitest';
+import * as core from '@actions/core';
+import { normalizeLabelColor } from '../src/main.js';
+import { actionYml } from './action-metadata.js';
+
+vi.mock('@actions/core', async (importOriginal) => ({
+  ...(await importOriginal()),
+  warning: vi.fn(),
+}));
 
 describe("Test normalizeLabelColor", () => {
-  beforeEach(() => {
-    jest.spyOn(core, 'warning').mockImplementation(() => { });
-  });
-
-  afterEach(() => {
-    jest.restoreAllMocks();
-  });
-
   // Read from action.yml rather than hardcoded: a default that stopped being a usable color
   // would otherwise leave every default run with a GitHub-assigned one and no warning.
   it("normalizes the action.yml default to a bare hex code", () => {

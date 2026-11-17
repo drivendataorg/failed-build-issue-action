@@ -1,15 +1,11 @@
 {
   "name": "failed-build-issue-action",
   "description": "Creates or comments on latest open issue that has a 'build failed' label.",
+  "type": "module",
   "scripts": {
     "build": "ncc build ./src/index.js",
     "lint": "eslint .",
-    "test": "jest --coverage"
-  },
-  "jest": {
-    "collectCoverageFrom": [
-      "src/**/*.js"
-    ]
+    "test": "vitest run"
   },
   "repository": {
     "type": "git",
@@ -45,8 +41,8 @@
     "@vercel/ncc": "^0.45.0",
     "eslint": "^10.11.0",
     "globals": "^17.12.0",
-    "jest": "^30.5.2",
-    "nock": "^14.0.17",
+    "nock": "^15.0.6",
+    "vitest": "^5.1.0",
     "yaml": "^2.9.1"
   }
 }

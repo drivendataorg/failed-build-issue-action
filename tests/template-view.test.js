@@ -1,6 +1,12 @@
-const core = require('@actions/core');
-const Mustache = require('mustache');
-const { templateView } = require('../src/new-issue-or-comment-for-label');
+import { expect, it, vi } from 'vitest';
+import * as core from '@actions/core';
+import Mustache from 'mustache';
+import { templateView } from '../src/new-issue-or-comment-for-label.js';
+
+vi.mock('@actions/core', async (importOriginal) => ({
+  ...(await importOriginal()),
+  warning: vi.fn(),
+}));
 
 // A stand-in for @actions/github's Context: repo/issue are inherited getters, not
 // stored values, which is exactly what the view has to preserve.
@@ -9,9 +15,6 @@ class FakeContext {
   get repo() { return { owner: "o", repo: "r" }; }
   get issue() { return { ...this.repo, number: 7 }; }
 }
-
-beforeEach(() => { jest.spyOn(core, 'warning').mockImplementation(() => { }); });
-afterEach(() => { jest.restoreAllMocks(); });
 
 const ref = { refName: "main", refUrl: "https://x/tree/main" };
 

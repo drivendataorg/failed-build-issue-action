@@ -1,8 +1,17 @@
-const core = require('@actions/core');
-const github = require('@actions/github');
-const nock = require('nock');
-const newIssueOrCommentForLabel = require('../src/new-issue-or-comment-for-label');
-const { actionYml } = require('./action-metadata');
+import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
+import * as core from '@actions/core';
+import * as github from '@actions/github';
+import nock from 'nock';
+import { newIssueOrCommentForLabel } from '../src/new-issue-or-comment-for-label.js';
+import { actionYml } from './action-metadata.js';
+
+vi.mock('@actions/core', async (importOriginal) => ({
+  ...(await importOriginal()),
+  error: vi.fn(),
+  warning: vi.fn(),
+  info: vi.fn(),
+  debug: vi.fn(),
+}));
 
 const testOwner = "jayqi";
 const testRepo = "not-a-real-repo";
@@ -48,14 +57,14 @@ const restoreEnv = (key, value) => {
   }
 };
 
-// Snapshot before beforeAll overwrites it; Jest workers share process.env.
+// Snapshot before beforeAll overwrites it, so afterAll can restore it.
 const originalEnvRefName = process.env.GITHUB_REF_NAME;
 
 describe("Test newIssueOrCommentForLabel", () => {
   // Request bodies and query strings captured by the nock interceptors, so that
   // they can be asserted on after the call. Do not assert inside the interceptor
   // predicate -- a throwing expect() there just makes the interceptor not match,
-  // and Jest reports "no match for request" instead of a useful diff.
+  // and nock reports "No match for request" instead of a useful diff.
   let captured;
   const capture = (key) => (body) => {
     captured[key] = body;
@@ -64,7 +73,7 @@ describe("Test newIssueOrCommentForLabel", () => {
 
   beforeAll(() => {
     // Mock github context
-    jest.spyOn(github.context, 'repo', 'get').mockImplementation(() => {
+    vi.spyOn(github.context, 'repo', 'get').mockImplementation(() => {
       return {
         owner: testOwner,
         repo: testRepo
@@ -80,12 +89,6 @@ describe("Test newIssueOrCommentForLabel", () => {
     github.context.runNumber = testRunNumber
     github.context.runId = testRunId
     github.context.eventName = testEventName
-
-    // Mock error/warning/info/debug
-    jest.spyOn(core, 'error').mockImplementation(() => { })
-    jest.spyOn(core, 'warning').mockImplementation(() => { })
-    jest.spyOn(core, 'info').mockImplementation(() => { })
-    jest.spyOn(core, 'debug').mockImplementation(() => { })
 
     // Any request that isn't mocked should fail loudly rather than hit the network
     nock.disableNetConnect();
@@ -110,9 +113,6 @@ describe("Test newIssueOrCommentForLabel", () => {
     originalPayload = github.context.payload;
     originalServerUrl = github.context.serverUrl;
     originalRefName = process.env.GITHUB_REF_NAME;
-    // The deprecation tests and the pull-request test assert on call count, so history must
-    // not leak in.
-    core.warning.mockClear();
   });
 
   afterEach(() => {
@@ -635,7 +635,7 @@ describe("Test newIssueOrCommentForLabel", () => {
       })
     )
       .rejects
-      .toThrow(new Error("Bad Request"));
+      .toThrow("Bad Request");
   });
 
   it("should not HTML-escape special characters in the issue title", async () => {

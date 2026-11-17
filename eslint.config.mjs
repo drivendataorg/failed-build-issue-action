@@ -8,8 +8,8 @@ export default [
     files: ["**/*.js"],
     languageOptions: {
       ecmaVersion: 2024,
-      sourceType: "commonjs",
-      globals: { ...globals.node, ...globals.jest },
+      sourceType: "module",
+      globals: globals.node,
     },
   },
 ];

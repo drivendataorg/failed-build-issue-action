@@ -1,16 +1,14 @@
-const core = require('@actions/core');
-const { normalizeLabelDescription } = require('../src/main');
-const { actionYml } = require('./action-metadata');
+import { describe, expect, it, vi } from 'vitest';
+import * as core from '@actions/core';
+import { normalizeLabelDescription } from '../src/main.js';
+import { actionYml } from './action-metadata.js';
+
+vi.mock('@actions/core', async (importOriginal) => ({
+  ...(await importOriginal()),
+  warning: vi.fn(),
+}));
 
 describe("Test normalizeLabelDescription", () => {
-  beforeEach(() => {
-    jest.spyOn(core, 'warning').mockImplementation(() => { });
-  });
-
-  afterEach(() => {
-    jest.restoreAllMocks();
-  });
-
   // Read from action.yml rather than hardcoded: a default that grew past the limit would
   // otherwise leave every created label with no description and only a warning to show it.
   it("passes the action.yml default through unchanged", () => {

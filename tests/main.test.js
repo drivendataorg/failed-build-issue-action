@@ -1,10 +1,11 @@
-jest.mock('@actions/core');
-jest.mock('../src/new-issue-or-comment-for-label');
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import * as core from '@actions/core';
+import { newIssueOrCommentForLabel } from '../src/new-issue-or-comment-for-label.js';
+import { run } from '../src/main.js';
+import { declaredInputs } from './action-metadata.js';
 
-const core = require('@actions/core');
-const newIssueOrCommentForLabel = require('../src/new-issue-or-comment-for-label');
-const { run } = require('../src/main');
-const { declaredInputs } = require('./action-metadata');
+vi.mock('@actions/core');
+vi.mock('../src/new-issue-or-comment-for-label.js');
 
 describe("Test run", () => {
   const testHtmlUrl = "https://github.com/drivendataorg/not-a-real-repo/issues/100";
@@ -23,7 +24,6 @@ describe("Test run", () => {
   };
 
   beforeEach(() => {
-    jest.clearAllMocks();
     core.getInput.mockImplementation((name) => inputs[name]);
     core.getBooleanInput.mockImplementation((name) => booleanInputs[name]);
   });
