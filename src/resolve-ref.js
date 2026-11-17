@@ -46,7 +46,7 @@ export const resolveRef = (context, env) => {
     return fromHead(run.head_branch, run.head_repository, baseRepoUrl, baseFullName);
   }
 
-  // Deliberately no fallback to context.ref: GITHUB_REF_NAME is unset outside Actions, so
+  // Deliberately no fallback to context.ref: the tests set GITHUB_REF_NAME directly, so
   // a hybrid would leave the tests and production on different paths.
   const refName = env.GITHUB_REF_NAME || "";
   return { refName, refUrl: refName ? treeUrl(baseRepoUrl, refName) : "" };

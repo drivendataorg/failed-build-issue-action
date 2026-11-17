@@ -63,8 +63,8 @@ const originalEnvRefName = process.env.GITHUB_REF_NAME;
 describe("Test newIssueOrCommentForLabel", () => {
   // Request bodies and query strings captured by the nock interceptors, so that
   // they can be asserted on after the call. Do not assert inside the interceptor
-  // predicate -- a throwing expect() there just makes the interceptor not match,
-  // and nock reports "No match for request" instead of a useful diff.
+  // predicate -- a throwing expect() there surfaces as a generic request failure
+  // (status 500) instead of a useful diff.
   let captured;
   const capture = (key) => (body) => {
     captured[key] = body;

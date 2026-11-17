@@ -23,9 +23,8 @@ updates:
     groups:
       dev-dependencies:
         dependency-type: development
-    # Held at their current majors until the toolkit upgrade lands as its own change.
-    # Minor and patch updates are unaffected, so security fixes on the current majors
-    # still come through.
+    # Major versions of these are upgraded by hand, not by Dependabot. Minor and patch
+    # updates are unaffected, so security fixes on the current majors still come through.
     ignore:
       - dependency-name: "@actions/core"
         update-types: ["version-update:semver-major"]
