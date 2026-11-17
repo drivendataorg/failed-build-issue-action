@@ -29,7 +29,7 @@ const fromHead = (ref, headRepo, baseRepoUrl, baseFullName) => {
   return { refName: ref, refUrl: treeUrl(baseRepoUrl, ref) };
 };
 
-const resolveRef = (context, env) => {
+export const resolveRef = (context, env) => {
   const baseFullName = `${context.repo.owner}/${context.repo.repo}`;
   const baseRepoUrl = `${context.serverUrl}/${baseFullName}`;
 
@@ -46,10 +46,8 @@ const resolveRef = (context, env) => {
     return fromHead(run.head_branch, run.head_repository, baseRepoUrl, baseFullName);
   }
 
-  // Deliberately no fallback to context.ref: GITHUB_REF_NAME is unset under Jest, so
+  // Deliberately no fallback to context.ref: the tests set GITHUB_REF_NAME directly, so
   // a hybrid would leave the tests and production on different paths.
   const refName = env.GITHUB_REF_NAME || "";
   return { refName, refUrl: refName ? treeUrl(baseRepoUrl, refName) : "" };
 };
-
-module.exports = resolveRef;

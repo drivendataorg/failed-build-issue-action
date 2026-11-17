@@ -1,4 +1,5 @@
-const resolveRef = require('../src/resolve-ref');
+import { describe, expect, it } from 'vitest';
+import { resolveRef } from '../src/resolve-ref.js';
 
 const testOwner = "jayqi";
 const testRepo = "not-a-real-repo";

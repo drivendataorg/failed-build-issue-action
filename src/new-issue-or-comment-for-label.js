@@ -1,7 +1,7 @@
-const core = require('@actions/core');
-const github = require('@actions/github');
-var Mustache = require('mustache');
-const resolveRef = require('./resolve-ref');
+import * as core from '@actions/core';
+import * as github from '@actions/github';
+import Mustache from 'mustache';
+import { resolveRef } from './resolve-ref.js';
 
 // The output target is markdown/plain text, not HTML, so Mustache's default
 // HTML escaping corrupts titles and code spans while adding no protection
@@ -40,7 +40,7 @@ const templateView = (context, ref) => ({
   refname: deprecatedRefname(ref.refName),
 });
 
-let newIssueOrCommentForLabel = async function ({
+export const newIssueOrCommentForLabel = async function ({
   githubToken,
   labelName,
   titleTemplate,
@@ -165,6 +165,5 @@ let newIssueOrCommentForLabel = async function ({
   return { issueNumber, created }
 };
 
-module.exports = newIssueOrCommentForLabel;
 // Exported for unit tests; not part of the action's interface.
-module.exports.templateView = templateView;
+export { templateView };

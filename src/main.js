@@ -1,6 +1,6 @@
-const util = require('util');
-const core = require('@actions/core');
-const newIssueOrCommentForLabel = require('./new-issue-or-comment-for-label');
+import { inspect } from 'node:util';
+import * as core from '@actions/core';
+import { newIssueOrCommentForLabel } from './new-issue-or-comment-for-label.js';
 
 // Normalizes to a bare 6-digit hex code
 // Invalid values are dropped, which falls back to GitHub's random color assignment
@@ -30,7 +30,7 @@ const normalizeLabelDescription = (input) => {
 };
 
 // most @actions toolkit packages have async methods
-async function run() {
+export async function run() {
   try {
     // Keyed, and in the order action.yml declares them
     const { issueNumber, created } = await newIssueOrCommentForLabel({
@@ -49,13 +49,11 @@ async function run() {
     core.setOutput('issue-number', issueNumber);
     core.setOutput('html-url', htmlUrl);
   } catch (error) {
-    // util.inspect is what console.error uses to format errors
-    core.debug("Error:\n" + util.inspect(error, { depth: null }))
+    // inspect is what console.error uses to format errors
+    core.debug("Error:\n" + inspect(error, { depth: null }))
     core.setFailed(error.message);
   }
 }
 
-module.exports = { run };
 // Exported for unit tests; not part of the action's interface.
-module.exports.normalizeLabelColor = normalizeLabelColor;
-module.exports.normalizeLabelDescription = normalizeLabelDescription;
+export { normalizeLabelColor, normalizeLabelDescription };
