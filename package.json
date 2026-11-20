@@ -1,6 +1,7 @@
 {
   "name": "failed-build-issue-action",
   "description": "Creates or comments on latest open issue that has a 'build failed' label.",
+  "private": true,
   "type": "module",
   "scripts": {
     "build": "ncc build ./src/index.js --license licenses.txt",
