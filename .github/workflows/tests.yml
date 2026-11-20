@@ -16,7 +16,6 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-      issues: write
     steps:
     - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       with:
@@ -49,6 +48,8 @@ jobs:
     needs: tests
     if: failure() && github.event.pull_request == null
     runs-on: ubuntu-latest
+    permissions:
+      issues: write
     steps:
       - uses: drivendataorg/failed-build-issue-action@940568ce50eeef3f31a920614cefcc6102d2f930 # v1.3.0
         with:
