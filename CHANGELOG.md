@@ -1,6 +1,6 @@
 # Changelog
 
-## v1.4.0 (Unreleased)
+## v1.4.0 (2026-11-20)
 
 - Updated `@actions/core` to v3 and `@actions/github` to v9. This clears security advisories in the older Octokit libraries bundled with the action, and removes the `punycode` and `url.parse()` deprecation warnings it logged on every run. Inputs, outputs, and behavior are unchanged.
 - Added `dist/licenses.txt`, which holds the license notices of the dependencies bundled into `dist/index.js`.
