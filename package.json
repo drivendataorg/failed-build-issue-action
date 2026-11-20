@@ -3,7 +3,7 @@
   "description": "Creates or comments on latest open issue that has a 'build failed' label.",
   "type": "module",
   "scripts": {
-    "build": "ncc build ./src/index.js",
+    "build": "ncc build ./src/index.js --license licenses.txt",
     "lint": "eslint .",
     "test": "vitest run"
   },
