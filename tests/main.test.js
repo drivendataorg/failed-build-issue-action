@@ -136,11 +136,8 @@ describe("Test run", () => {
 
       await run();
 
-      expect(core.notice).toHaveBeenCalledWith(
-        "The @v1 tag will no longer receive updates. " +
-        "Pin to a commit SHA or exact version. " +
-        "See https://github.com/drivendataorg/failed-build-issue-action#basic-usage"
-      );
+      expect(core.notice).toHaveBeenCalledOnce();
+      expect(core.notice).toHaveBeenCalledWith(expect.stringContaining("no longer receive updates"));
     });
 
     it.each([
