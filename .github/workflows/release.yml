@@ -1,0 +1,163 @@
+# Creates a GitHub release of the commit this runs on and moves the major version
+# tag (e.g. v1) to it. dist/ is committed, so the tagged commit is already runnable.
+# Before running, date the version's heading in CHANGELOG.md, whose section becomes
+# the release notes, and run test-integration on the commit being released.
+name: release
+run-name: Release of ${{ inputs.version }}${{ inputs.dry-run && ' (dry run)' || '' }}
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version tag, e.g. v1.2.3'
+        required: true
+      dry-run:
+        description: 'Dry run'
+        required: false
+        default: false
+        type: boolean
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+permissions: {}
+
+jobs:
+  check-version:
+    name: Check version tag
+    runs-on: ubuntu-latest
+    permissions: {}
+    steps:
+      - name: Check that a release runs on main
+        if: ${{ !inputs.dry-run && github.ref != 'refs/heads/main' }}
+        run: |
+          echo "::error::Releases must run on main, not ${GITHUB_REF}."
+          exit 1
+
+      - name: Check the version tag format
+        run: |
+          if [[ ! "${INPUTS_VERSION}" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "::error::Version tag must look like v1.2.3, got [${INPUTS_VERSION}]."
+            exit 1
+          fi
+        env:
+          INPUTS_VERSION: ${{ inputs.version }}
+
+      - name: Check the tag doesn't already exist
+        run: |
+          existing=$(git ls-remote --tags "${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}.git" "refs/tags/${INPUTS_VERSION}")
+          if [[ -n "$existing" ]]; then
+            echo "::error::Tag ${INPUTS_VERSION} already exists."
+            exit 1
+          fi
+        env:
+          INPUTS_VERSION: ${{ inputs.version }}
+
+  extract-changelog:
+    name: Extract changelog content
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Check the changelog heading doesn't say "Unreleased"
+        # ENVIRON rather than -v so the version is compared as a literal string, never as a regex.
+        run: |
+          awk '
+            /^(```|~~~)/ { fence = !fence }
+            !fence && /^## / && $2 == ENVIRON["INPUTS_VERSION"] { ok = tolower($0) !~ /unreleased/; exit }
+            END { exit !ok }
+          ' CHANGELOG.md
+        env:
+          INPUTS_VERSION: ${{ inputs.version }}
+
+      - name: Extract changelog section
+        run: |
+          awk '
+            BEGIN { version = ENVIRON["INPUTS_VERSION"] }
+            /^(```|~~~)/ { fence = !fence }
+            !fence && /^## / { if (found) exit; if ($2 == version) { found = 1; next } }
+            found
+          ' CHANGELOG.md > __CHANGELOG-extracted.md
+          cat __CHANGELOG-extracted.md
+        env:
+          INPUTS_VERSION: ${{ inputs.version }}
+
+      - name: Check the extracted section is not empty
+        run: grep -q '[^[:space:]]' __CHANGELOG-extracted.md
+
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: changelog-extracted
+          path: __CHANGELOG-extracted.md
+
+  create-github-release:
+    name: Create GitHub release${{ inputs.dry-run && ' (dry run)' || '' }}
+    needs: [check-version, extract-changelog]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Download extracted changelog
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: changelog-extracted
+
+      - name: Print diagnostics
+        if: ${{ inputs.dry-run }}
+        run: |
+          echo "${INPUTS_VERSION}"
+          echo "---"
+          echo "${GITHUB_SHA}"
+          echo "---"
+          cat __CHANGELOG-extracted.md
+        env:
+          INPUTS_VERSION: ${{ inputs.version }}
+
+      - name: Create release
+        if: ${{ !inputs.dry-run }}
+        run: |
+          gh release create "${INPUTS_VERSION}" \
+            --title "${INPUTS_VERSION}" \
+            --target "${GITHUB_SHA}" \
+            --notes-file __CHANGELOG-extracted.md
+        env:
+          GH_REPO: ${{ github.repository }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          INPUTS_VERSION: ${{ inputs.version }}
+
+  move-major-tag:
+    name: Move major version tag${{ inputs.dry-run && ' (dry run)' || '' }}
+    needs: create-github-release
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Move major version tag
+        id: tag
+        run: |
+          MAJOR="${INPUTS_VERSION%%.*}"  # v1.2.3 -> v1
+          echo "Moving ${MAJOR} to ${GITHUB_SHA}"
+          git tag -f "$MAJOR" "$GITHUB_SHA"
+          echo "major=${MAJOR}" >> "$GITHUB_OUTPUT"
+        env:
+          INPUTS_VERSION: ${{ inputs.version }}
+
+      - name: Push major version tag
+        if: ${{ !inputs.dry-run }}
+        run: |
+          # Checkout runs with persist-credentials: false, so authenticate push inline
+          git push -f \
+            "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" \
+            "refs/tags/${MAJOR}"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          MAJOR: ${{ steps.tag.outputs.major }}
