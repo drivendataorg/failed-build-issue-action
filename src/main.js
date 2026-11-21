@@ -34,7 +34,7 @@ export async function run() {
   // GITHUB_ACTION_REF is the ref as written in the workflow's `uses:`, e.g. "v1" or a commit SHA
   if (process.env.GITHUB_ACTION_REF === 'v1') {
     core.notice(
-      "drivendataorg/failed-build-issue-action@v1 will no longer receive updates. " +
+      "The @v1 tag will no longer receive updates. " +
       "Pin to a commit SHA or exact version. " +
       "See https://github.com/drivendataorg/failed-build-issue-action#basic-usage"
     );

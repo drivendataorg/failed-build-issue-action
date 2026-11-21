@@ -137,7 +137,7 @@ describe("Test run", () => {
       await run();
 
       expect(core.notice).toHaveBeenCalledWith(
-        "drivendataorg/failed-build-issue-action@v1 will no longer receive updates. " +
+        "The @v1 tag will no longer receive updates. " +
         "Pin to a commit SHA or exact version. " +
         "See https://github.com/drivendataorg/failed-build-issue-action#basic-usage"
       );
