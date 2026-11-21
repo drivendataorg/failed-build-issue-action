@@ -28,6 +28,9 @@ permissions:
 
 See the two examples below for realistic usage in full workflows.
 
+> [!NOTE]
+> This repository no longer creates or updates major version tags. `v1` will continue working as an alias for `v1.4.0`, but it will not move to later releases. Pin to a commit SHA (recommended), or to an exact version such as `v1.4.0`.
+
 ## Example 1: As a step
 
 Below is an example GitHub Workflow YAML file that demonstrates a simple case of using this action in a workflow. If your workflow just runs a single job, then you can set things up in this way.
