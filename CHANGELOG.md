@@ -1,6 +1,6 @@
 # Changelog
 
-## v1.4.0 (Unreleased)
+## v1.4.0 (2026-11-21)
 
 **This is the last release the `v1` tag will point to. This repository will no longer create or update major version tags. A movable tag can be pointed at different code without any change to your workflow, which is a supply chain attack risk. Since v1.3.0, we publish exact version tags as [immutable releases](https://docs.github.com/en/code-security/concepts/supply-chain-security/immutable-releases), so GitHub prevents them from being moved. `v1` will continue working as an alias for `v1.4.0`, and we won't move it to later releases, but it doesn't have that protection. Pin to a commit SHA (recommended), or to an exact version such as `v1.4.0`.**
 
