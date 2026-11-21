@@ -1,5 +1,5 @@
-# Creates a GitHub release of the commit this runs on and moves the major version
-# tag (e.g. v1) to it. dist/ is committed, so the tagged commit is already runnable.
+# Creates a GitHub release of the commit this runs on. dist/ is committed, so the
+# tagged commit is already runnable.
 # Before running, date the version's heading in CHANGELOG.md, whose section becomes
 # the release notes, and run test-integration on the commit being released.
 name: release
@@ -129,35 +129,3 @@ jobs:
           GH_REPO: ${{ github.repository }}
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           INPUTS_VERSION: ${{ inputs.version }}
-
-  move-major-tag:
-    name: Move major version tag${{ inputs.dry-run && ' (dry run)' || '' }}
-    needs: create-github-release
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          persist-credentials: false
-
-      - name: Move major version tag
-        id: tag
-        run: |
-          MAJOR="${INPUTS_VERSION%%.*}"  # v1.2.3 -> v1
-          echo "Moving ${MAJOR} to ${GITHUB_SHA}"
-          git tag -f "$MAJOR" "$GITHUB_SHA"
-          echo "major=${MAJOR}" >> "$GITHUB_OUTPUT"
-        env:
-          INPUTS_VERSION: ${{ inputs.version }}
-
-      - name: Push major version tag
-        if: ${{ !inputs.dry-run }}
-        run: |
-          # Checkout runs with persist-credentials: false, so authenticate push inline
-          git push -f \
-            "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" \
-            "refs/tags/${MAJOR}"
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          MAJOR: ${{ steps.tag.outputs.major }}
