@@ -29472,7 +29472,7 @@ function utils_toCommandValue(input) {
  * @returns The command properties to send with the actual annotation command
  * See IssueCommandProperties: https://github.com/actions/runner/blob/main/src/Runner.Worker/ActionCommandManager.cs#L646
  */
-function utils_toCommandProperties(annotationProperties) {
+function toCommandProperties(annotationProperties) {
     if (!Object.keys(annotationProperties).length) {
         return {};
     }
@@ -32283,7 +32283,7 @@ function core_debug(message) {
  * @param properties optional properties to add to the annotation.
  */
 function error(message, properties = {}) {
-    command_issueCommand('error', utils_toCommandProperties(properties), message instanceof Error ? message.toString() : message);
+    command_issueCommand('error', toCommandProperties(properties), message instanceof Error ? message.toString() : message);
 }
 /**
  * Adds a warning issue
@@ -32291,7 +32291,7 @@ function error(message, properties = {}) {
  * @param properties optional properties to add to the annotation.
  */
 function warning(message, properties = {}) {
-    command_issueCommand('warning', utils_toCommandProperties(properties), message instanceof Error ? message.toString() : message);
+    command_issueCommand('warning', toCommandProperties(properties), message instanceof Error ? message.toString() : message);
 }
 /**
  * Adds a notice issue
@@ -32299,7 +32299,7 @@ function warning(message, properties = {}) {
  * @param properties optional properties to add to the annotation.
  */
 function notice(message, properties = {}) {
-    issueCommand('notice', toCommandProperties(properties), message instanceof Error ? message.toString() : message);
+    command_issueCommand('notice', toCommandProperties(properties), message instanceof Error ? message.toString() : message);
 }
 /**
  * Writes info to log with console.log.
@@ -38417,6 +38417,15 @@ const normalizeLabelDescription = (input) => {
 
 // most @actions toolkit packages have async methods
 async function run() {
+  // GITHUB_ACTION_REF is the ref as written in the workflow's `uses:`, e.g. "v1" or a commit SHA
+  if (process.env.GITHUB_ACTION_REF === 'v1') {
+    notice(
+      "The @v1 tag will no longer receive updates. " +
+      "Pin to a commit SHA or exact version. " +
+      "See https://github.com/drivendataorg/failed-build-issue-action#basic-usage"
+    );
+  }
+
   try {
     // Keyed, and in the order action.yml declares them
     const { issueNumber, created } = await newIssueOrCommentForLabel({

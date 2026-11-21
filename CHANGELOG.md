@@ -2,6 +2,9 @@
 
 ## v1.4.0 (Unreleased)
 
+**This is the last release the `v1` tag will point to. This repository will no longer create or update major version tags. A movable tag can be pointed at different code without any change to your workflow, which is a supply chain attack risk. Since v1.3.0, we publish exact version tags as [immutable releases](https://docs.github.com/en/code-security/concepts/supply-chain-security/immutable-releases), so GitHub prevents them from being moved. `v1` will continue working as an alias for `v1.4.0`, and we won't move it to later releases, but it doesn't have that protection. Pin to a commit SHA (recommended), or to an exact version such as `v1.4.0`.**
+
+- Added a notice, shown when the action is used via `@v1`, that `v1` will no longer receive updates.
 - Updated `@actions/core` to v3 and `@actions/github` to v9. This clears security advisories in the older Octokit libraries bundled with the action, and removes the `punycode` and `url.parse()` deprecation warnings it logged on every run. Inputs, outputs, and behavior are unchanged.
 - Added `dist/licenses.txt`, which holds the license notices of the dependencies bundled into `dist/index.js`.
 
