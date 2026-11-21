@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import * as core from '@actions/core';
 import { newIssueOrCommentForLabel } from '../src/new-issue-or-comment-for-label.js';
 import { run } from '../src/main.js';
@@ -117,5 +117,39 @@ describe("Test run", () => {
       ...core.getBooleanInput.mock.calls,
     ].map(([name]) => name);
     expect([...new Set(requested)].sort()).toEqual(declaredInputs);
+  });
+
+  describe("v1 tag notice", () => {
+    beforeEach(() => {
+      newIssueOrCommentForLabel.mockResolvedValue({
+        issueNumber: 1,
+        created: { html_url: testHtmlUrl },
+      });
+    });
+
+    afterEach(() => {
+      vi.unstubAllEnvs();
+    });
+
+    it("notices that v1 no longer receives updates when used via @v1", async () => {
+      vi.stubEnv('GITHUB_ACTION_REF', 'v1');
+
+      await run();
+
+      expect(core.notice).toHaveBeenCalledOnce();
+      expect(core.notice).toHaveBeenCalledWith(expect.stringContaining("no longer receive updates"));
+    });
+
+    it.each([
+      ["an exact version", "v1.4.0"],
+      ["a commit SHA", "940568ce50eeef3f31a920614cefcc6102d2f930"],
+      ["a local path (empty)", ""],
+    ])("does not notice when used via %s", async (_, ref) => {
+      vi.stubEnv('GITHUB_ACTION_REF', ref);
+
+      await run();
+
+      expect(core.notice).not.toHaveBeenCalled();
+    });
   });
 });

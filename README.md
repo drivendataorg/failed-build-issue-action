@@ -28,6 +28,9 @@ permissions:
 
 See the two examples below for realistic usage in full workflows.
 
+> [!NOTE]
+> This repository no longer creates or updates major version tags. A movable tag can be pointed at different code without any change to your workflow, which is a supply chain attack risk. Since v1.3.0, we publish exact version tags as [immutable releases](https://docs.github.com/en/code-security/concepts/supply-chain-security/immutable-releases), so GitHub prevents them from being moved. `v1` will continue working as an alias for `v1.4.0`, and we won't move it to later releases, but it doesn't have that protection. Pin to a commit SHA (recommended), or to an exact version such as `v1.4.0`.
+
 ## Example 1: As a step
 
 Below is an example GitHub Workflow YAML file that demonstrates a simple case of using this action in a workflow. If your workflow just runs a single job, then you can set things up in this way.
