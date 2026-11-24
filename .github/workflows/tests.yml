@@ -20,6 +20,8 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
+    outputs:
+      coverage-total: ${{ steps.coverage.outputs.total }}
     steps:
     - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       with:
@@ -41,7 +43,37 @@ jobs:
 
     - name: Run tests
       run: |
-        npm test
+        npm test -- --coverage
+
+    - name: Report coverage
+      id: coverage
+      run: |
+        jq -r --arg root "${GITHUB_WORKSPACE}/" '
+          def row($name): "| \($name) | \(.statements.pct)% | \(.branches.pct)% | \(.functions.pct)% | \(.lines.pct)% |";
+          "## Coverage",
+          "",
+          "| File | Statements | Branches | Functions | Lines |",
+          "| --- | ---: | ---: | ---: | ---: |",
+          (del(.total) | to_entries | sort_by(.key)[] | .key as $k | .value | row($k | ltrimstr($root))),
+          (.total | row("**Total**"))
+        ' coverage/coverage-summary.json >> "$GITHUB_STEP_SUMMARY"
+        echo "total=$(jq '.total.lines.pct | floor' coverage/coverage-summary.json)" >> "$GITHUB_OUTPUT"
+
+    - name: Upload HTML coverage report
+      uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+      with:
+        name: coverage-html
+        path: coverage/html/
+        if-no-files-found: error
+
+    - name: Upload JSON coverage report
+      uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+      with:
+        name: coverage-json
+        path: |
+          coverage/coverage-final.json
+          coverage/coverage-summary.json
+        if-no-files-found: error
 
   # Rebuilds the bundle and fails if the committed dist/ is out of date.
   # Because dist/ is committed to the repo, it must be regenerated whenever
@@ -118,9 +150,42 @@ jobs:
         allowed-skips: dependency-review
         jobs: ${{ toJSON(needs) }}
 
+  coverage-badge:
+    name: Publish coverage badge
+    needs: tests
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # Push to the badges branch
+    steps:
+    - name: Push badge data to badges branch
+      env:
+        COVERAGE_TOTAL: ${{ needs.tests.outputs.coverage-total }}
+        TOKEN: ${{ github.token }}
+      run: |
+        [[ $COVERAGE_TOTAL =~ ^[0-9]+$ ]] || { echo "Unexpected coverage total: '$COVERAGE_TOTAL'"; exit 1; }
+        main_sha=$(git ls-remote "https://github.com/${GITHUB_REPOSITORY}.git" refs/heads/main | cut -f1)
+        if [[ "$main_sha" != "$GITHUB_SHA" ]]; then
+          echo "main has moved past ${GITHUB_SHA}; skipping badge update"
+          exit 0
+        fi
+        if (( COVERAGE_TOTAL >= 90 )); then color=brightgreen
+        elif (( COVERAGE_TOTAL >= 75 )); then color=yellow
+        else color=red
+        fi
+        git init --quiet --initial-branch=badges badges
+        cd badges
+        jq -n --arg message "${COVERAGE_TOTAL}%" --arg color "$color" \
+          '{schemaVersion: 1, label: "coverage", message: $message, color: $color}' > coverage.json
+        git add coverage.json
+        git -c user.name="github-actions[bot]" \
+          -c user.email="41898282+github-actions[bot]@users.noreply.github.com" \
+          commit --quiet --message "Update coverage badge for ${GITHUB_SHA}"
+        git push --force --quiet "https://x-access-token:${TOKEN}@github.com/${GITHUB_REPOSITORY}.git" badges
+
   notify:
     name: Notify failed build
-    needs: [tests, check-dist, zizmor]
+    needs: [tests, check-dist, zizmor, coverage-badge]
     if: failure() && (github.event_name == 'push' || github.event_name == 'schedule')
     runs-on: ubuntu-latest
     permissions:
