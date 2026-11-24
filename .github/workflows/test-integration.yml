@@ -13,7 +13,7 @@ jobs:
       issues: write
     steps:
     # Runs the action as published consumers do, from the committed dist/ at
-    # this commit. check-dist.yml is what keeps that bundle current.
+    # this commit. The check-dist job in tests.yml keeps that bundle current.
     - name: Run action from committed dist/
       id: run-action
       uses: $/
