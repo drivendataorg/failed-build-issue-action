@@ -12,5 +12,10 @@ export default defineConfig({
       http_proxy: '',
       GITHUB_API_URL: 'https://api.github.com',
     },
+    coverage: {
+      provider: 'v8',
+      include: ['src/**/*.js'],
+      reporter: ['text', 'html', 'json-summary'],
+    },
   },
 });

@@ -1,6 +1,6 @@
 # Failed Build Issue Action
 
-[![tests](https://github.com/drivendataorg/failed-build-issue-action/actions/workflows/tests.yml/badge.svg?branch=main)](https://github.com/drivendataorg/failed-build-issue-action/actions/workflows/tests.yml)
+[![tests](https://github.com/drivendataorg/failed-build-issue-action/actions/workflows/tests.yml/badge.svg?branch=main)](https://github.com/drivendataorg/failed-build-issue-action/actions/workflows/tests.yml) [![coverage](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/drivendataorg/failed-build-issue-action/badges/coverage.json)](https://github.com/drivendataorg/failed-build-issue-action/actions/workflows/tests.yml?query=branch%3Amain)
 
 > [!IMPORTANT]
 > We've moved! This repository has transferred from **jayqi/failed-build-issue-action** to **drivendataorg/failed-build-issue-action**. Old references will continue to redirect but we recommend updating.
